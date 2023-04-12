@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.redis.model.Data;
@@ -40,15 +41,29 @@ public class ApiController {
 	@Autowired
 	private ApiService service;
 	
-  @GetMapping("/data")
-  public ResponseEntity<?> getAllData() {
-  	JSONArray data = service.getAllData();
+	@GetMapping("/data")
+	public ResponseEntity<?> getAllData(@RequestParam(name = "page", defaultValue = "1") int page,
+	                                    @RequestParam(name = "perpage", defaultValue = "10") int perPage) {
+  	
+  	JSONObject jsonObject = new JSONObject();
+  	jsonObject.put("result", true);
 
-  	if(data == null) {
-    	return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  	JSONObject data = new JSONObject();
+  	JSONArray contents =  service.getAllData();
+  	data.put("contents", contents);
+
+  	JSONObject pagination = new JSONObject();
+  	pagination.put("page", page);
+  	pagination.put("totalCount", contents.length());
+  	data.put("pagination", pagination);
+
+  	jsonObject.put("data", data);
+  	
+  	if(contents == null) {
+    	return new ResponseEntity<>(jsonObject.toMap() , HttpStatus.NOT_FOUND);
     }
     
-    return new ResponseEntity<>(data.toList(), HttpStatus.OK);
+    return new ResponseEntity<>(jsonObject.toMap(), HttpStatus.OK);
   }
   // Ehcache로 로직 변경 예정 23.04.12
   //@Cacheable(value = "data", key = "#id")

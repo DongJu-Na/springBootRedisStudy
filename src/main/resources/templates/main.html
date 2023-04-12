@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
 <style>
-
 body{background: #f2f2f2;font-family: 'Open Sans', sans-serif;}
 .search {width: 100%;position: relative;display: flex;}
 .searchTerm {width: 100%;border: 3px solid #00B4CC;border-right: none;padding: 5px;height: 20px;border-radius: 5px 0 0 5px;outline: none; color: #9DBFAF;}
@@ -15,6 +15,7 @@ body{background: #f2f2f2;font-family: 'Open Sans', sans-serif;}
 .wrap{ width: 30%; position: absolute; top: 5%; left: 50%; transform: translate(-50%, -50%);}
 </style>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <title>DEMO</title>
 </head>
@@ -32,12 +33,22 @@ body{background: #f2f2f2;font-family: 'Open Sans', sans-serif;}
 </div>
 
 <div id="grid"></div>
+<div id="pagination" class="tui-pagination"></div>
 </body>
 <script>
 
 const Grid = new tui.Grid({
     el: document.getElementById('grid'),
-    data: [],
+    data: {
+    	api : {
+    	  readData: { url: '/api/data', method: 'GET' }
+    	}
+    },
+    pageOptions: {
+        perPage: 5,
+        useClient: true,
+	},
+    rowHeaders: ['rowNum'],
     scrollX: false,
     scrollY: false,
 	    columns: [
@@ -53,6 +64,11 @@ const Grid = new tui.Grid({
 	});
 	
 	console.log(Grid);
+$("#searchInp").on("keydown",function(e){
+	if(e.keyCode == 13){
+		f_Search();
+	}
+})	
 
 function f_Search(){
 	console.debug("f_Search");
@@ -74,12 +90,14 @@ function f_Search(){
 	        		temp.push(data);
         		Grid.resetData(temp);
         	}else if(data !== null && _url === "/api/data"){
-        		Grid.resetData(data);
+        		Grid.resetData(data.data.contents);
+        	}else if(data === null){
+        		Grid.resetData([]);
         	}
-        	
         },error: function(request, status, error) {
           console.log('통신실패!!');
           console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          Grid.resetData([]);
         }
       });
 }

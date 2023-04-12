@@ -45,14 +45,16 @@ public class ApiService {
 	
 	public JSONObject findById(String key)  {
 		log.info("find Key > " + key);
-		JSONObject result = new JSONObject();
-		String value = redisTemplate.opsForValue().get(key).toString();
-		log.info("value > " + value);
-		if(value == null) {
-			 	return null;
-		}
 		
-		result = JsonUtil.getDataAsJSONObject(key , value);
+		JSONObject result = new JSONObject();
+		
+		Object value = redisTemplate.opsForValue().get(key);
+		if(value == null) {
+			return null;
+		}
+		log.info("value > " + value.toString());
+		
+		result = JsonUtil.getDataAsJSONObject(key , value.toString());
 		log.debug("findById result > " + result.toString());
 		 
 		 return result;
