@@ -81,7 +81,7 @@ public class ApiController {
   @CacheEvict(value = "data", key="#id")
   @DeleteMapping("/data/{id}")
   public void deleteData(@PathVariable("id") String key) {
-      service.deleteStudent(key);
+      service.deleteData(key);
   }
 
   @PostMapping("/data")

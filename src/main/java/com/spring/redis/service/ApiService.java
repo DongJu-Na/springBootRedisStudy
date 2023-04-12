@@ -38,7 +38,7 @@ public class ApiService {
 		redisTemplate.opsForValue().set(data.getKey(), data);
 	}
 	
-	public void deleteStudent(String key) {
+	public void deleteData(String key) {
 		log.info("Delete Data Key > " + key);
 		redisTemplate.delete(key);
 	}
