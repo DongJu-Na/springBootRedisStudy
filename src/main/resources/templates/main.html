@@ -66,9 +66,17 @@ function f_Search(){
     $.ajax({
         type: "GET",
         url: _url,
-        dataType: "text",
+        dataType: "json",
         success: function(data) {
-          console.log("통신데이터 값 : " + data);
+        	console.log(data);
+        	if(data !== null && _url !== "/api/data"){
+        		var temp = new Array();
+	        		temp.push(data);
+        		Grid.resetData(temp);
+        	}else if(data !== null && _url === "/api/data"){
+        		Grid.resetData(data);
+        	}
+        	
         },error: function(request, status, error) {
           console.log('통신실패!!');
           console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
