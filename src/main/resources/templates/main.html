@@ -19,7 +19,8 @@ body{background: #f2f2f2;font-family: 'Open Sans', sans-serif;}
 <title>DEMO</title>
 </head>
 <body>
-<h1>데이터 처리 전략</h1>
+<h1>데이터 처리 전략</h1> 
+<h2 style="color :red";><span>Project Active Profiles > </span> <span th:text="${@environment.getActiveProfiles()[0]}"></span></h2>
 
 <div class="wrap">
    <div class="search">
