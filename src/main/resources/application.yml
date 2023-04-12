@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: local
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
   thymeleaf:
     prefix : classpath:templates/
     suffix : .html

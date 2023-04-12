@@ -3,12 +3,14 @@ package com.spring.redis.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import com.spring.redis.model.Data;
+import com.spring.redis.util.JsonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApiService {
 	@Autowired
-	private RedisTemplate<String, Data> redisTemplate;
+	private RedisTemplate<String, Object> redisTemplate;
   
   public void saveData(Data data) {
   	log.info("Save Data > " + data.toString());
@@ -41,19 +43,34 @@ public class ApiService {
 		redisTemplate.delete(key);
 	}
 	
-	public Data findById(String key) {
-		// log.info("find Key > " + key);
-    ValueOperations<String, Data> valueOperations = redisTemplate.opsForValue();
-    Object result = valueOperations.get(key);
-    System.out.println("Key: " + key + ", Value: " + result); // 콘솔에 출력
-	  return redisTemplate.opsForValue().get(key);
+	public JSONObject findById(String key)  {
+		log.info("find Key > " + key);
+		JSONObject result = new JSONObject();
+		String value = redisTemplate.opsForValue().get(key).toString();
+		log.info("value > " + value);
+		if(value == null) {
+			 	return null;
+		}
+		
+		result = JsonUtil.getDataAsJSONObject(key , value);
+		log.debug("findById result > " + result.toString());
+		 
+		 return result;
+	    
 	}
 	
 	
-	public List<Data> getAllData() {
-	    List<Data> alldata = new ArrayList<Data>();
-	    redisTemplate.keys("*").forEach(dt -> alldata.add(redisTemplate.opsForValue().get(dt)));
-	    log.info("find All Data Length > " + alldata.size());
+	public JSONArray getAllData() {
+	    JSONArray alldata = new JSONArray();
+	    redisTemplate.keys("*").forEach(key -> {
+	        String value = redisTemplate.opsForValue().get(key).toString();
+	        JSONObject data = new JSONObject();
+	        data.put("key", key);
+	        data.put("value", value);
+	        alldata.put(data);
+	    });
+	    log.info("find All Data Length > " +  alldata.length());
 	    return alldata;
 	}
+	
 }

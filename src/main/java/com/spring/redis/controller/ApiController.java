@@ -2,10 +2,14 @@ package com.spring.redis.controller;
 
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,16 +41,27 @@ public class ApiController {
 	private ApiService service;
 	
   @GetMapping("/data")
-  public List<Data> getAllData() {
-      return service.getAllData();
-  }
+  public ResponseEntity<?> getAllData() {
+  	JSONArray data = service.getAllData();
 
+  	if(data == null) {
+    	return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    
+    return new ResponseEntity<>(data.toList(), HttpStatus.OK);
+  }
+  // Ehcache로 로직 변경 예정 23.04.12
   //@Cacheable(value = "data", key = "#id")
   @GetMapping("/data/{id}")
-  public Data getData(@PathVariable("id") String key) {
-      return service.findById(key);
+  public ResponseEntity<?> getData(@PathVariable("id") String key) {
+      JSONObject data = service.findById(key);
+      
+      if(data == null) {
+      	return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+      
+      return new ResponseEntity<>(data.toMap(), HttpStatus.OK);
   }
-
 
   @CacheEvict(value = "data", key="#id")
   @DeleteMapping("/data/{id}")
@@ -59,7 +74,7 @@ public class ApiController {
       service.saveData(data);
   }
 
-  @CachePut(value = "data", key = "#data.id")
+  @CachePut(value = "data", key = "#id")
   @PutMapping("/data/update")
   public void updateData(@RequestBody Data data) {
       service.updateData(data);
