@@ -65,8 +65,7 @@ public class ApiService {
 	    redisTemplate.keys("*").forEach(key -> {
 	        String value = redisTemplate.opsForValue().get(key).toString();
 	        JSONObject data = new JSONObject();
-	        data.put("key", key);
-	        data.put("value", value);
+	        data = JsonUtil.getDataAsJSONObject(key , value);
 	        alldata.put(data);
 	    });
 	    log.info("find All Data Length > " +  alldata.length());
