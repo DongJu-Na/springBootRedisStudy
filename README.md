@@ -6,3 +6,7 @@
 
 
 ## 🚀 캐싱전략 추가예정
+
+1) ehCache3
+2) Redis
+3) RDBMS 
