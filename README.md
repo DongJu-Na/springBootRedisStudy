@@ -6,3 +6,9 @@
 
 
 ## 🚀 캐싱전략 추가예정
+
+1) ehCache3
+2) Redis
+3) RDBMS 
+
+![image](https://user-images.githubusercontent.com/79893048/232316967-429cdb96-4563-4fde-8529-3a5d2ca3b41c.png)
