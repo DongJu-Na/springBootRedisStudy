@@ -41,6 +41,7 @@ public class ApiController {
 	@Autowired
 	private ApiService service;
 	
+	@Cacheable(value = "data")
 	@GetMapping("/data")
 	public ResponseEntity<?> getAllData(@RequestParam(name = "page", defaultValue = "1") int page,
 	                                    @RequestParam(name = "perpage", defaultValue = "10") int perPage) {
@@ -65,8 +66,8 @@ public class ApiController {
     
     return new ResponseEntity<>(jsonObject.toMap(), HttpStatus.OK);
   }
-  // Ehcache로 로직 변경 예정 23.04.12
-  //@Cacheable(value = "data", key = "#id")
+	
+  @Cacheable(value = "data", key = "#id")
   @GetMapping("/data/{id}")
   public ResponseEntity<?> getData(@PathVariable("id") String key) {
       JSONObject data = service.findById(key);
